@@ -19,9 +19,23 @@ val <T> Pref<T>.state
     @Composable
     get() = flow.collectAsStateWithLifecycle(default).value
 
+fun <T> Pref<T>.toMutalbeState(): MutableState<T> = object : MutableState<T> {
+    override var value: T
+        get() = runBlocking(PreferenceIOScope.coroutineContext) { current() }
+        set(value) {
+            PreferenceIOScope.launch { emit(value) }
+        }
+
+    override fun component1(): T = value
+
+    override fun component2() = fun(it: T) { value = it }
+
+    override fun toString(): String = name
+}
+
 val <T> Pref<T>.delegator: MutableState<T>
     @Composable
-    get() = rememberSaveable { mutableStateOf(get()) }.apply {
+    get() = rememberSaveable { mutableStateOf(default) }.apply {
         val lifecycle = LocalLifecycleOwner.current.lifecycle
         LaunchedEffect(Unit) {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
