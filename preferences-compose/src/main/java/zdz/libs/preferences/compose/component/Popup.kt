@@ -1,0 +1,191 @@
+package zdz.libs.preferences.compose.component
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import zdz.libs.compose.ex.AlertDialog
+import zdz.libs.compose.ex.Dialog
+import zdz.libs.compose.ex.str
+import zdz.libs.preferences.compose.OrderBox
+import zdz.libs.preferences.compose.contracts.PreferenceGroupScope
+import zdz.libs.preferences.compose.delegator
+import zdz.libs.preferences.compose.remAssign
+import zdz.libs.preferences.contracts.Pref
+import zdz.libs.preferences.model.get
+import zdz.libs.preferences.model.set
+
+@JvmName("SinglePopup")
+@Composable
+fun <T> PreferenceGroupScope.Popup(
+    key: Pref<T>,
+    entries: Map<T, String>,
+    title: String,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    enabled: Boolean = true,
+    icon: @Composable (() -> Unit)? = null,
+) {
+    var current by key.delegator
+    val dialog = Dialog(
+        title = title,
+        content = {
+            LazyColumn {
+                items(entries.size) { index ->
+                    val (t, u) = entries.entries.elementAt(index)
+                    Column {
+                        RadioButton(selected = current == t, onClick = {
+                            current = t
+                            hide()
+                        })
+                        Text(text = u, style = typography.bodyMedium)
+                    }
+                }
+            }
+        })
+    Base(
+        title = title,
+        modifier = modifier.clickable { dialog.hide() },
+        summary = summary,
+        enabled = enabled,
+        icon = icon,
+    )
+}
+
+@Composable
+private inline fun <T, R> PreferenceGroupScope.MultiplePopupCore(
+    key: Pref<out Collection<T>>,
+    crossinline onSelectedChanged: (List<T>) -> Unit,
+    entries: Map<T, R>,
+    title: String,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    enabled: Boolean = true,
+    noinline icon: @Composable (() -> Unit)? = null,
+    crossinline content: @Composable (T, selected: MutableList<T>, label: R) -> Unit,
+) {
+    var visible by remember { mutableStateOf(false) }
+    val selected = remember(visible) { key.get().toMutableStateList() }
+    if (visible) AlertDialog(
+        title = title,
+        confirmLabel = android.R.string.ok.str,
+        dismissLabel = android.R.string.cancel.str,
+        neutralLabel = "清除", // TODO: extract string resource
+        onConfirm = { onSelectedChanged(selected); visible = false },
+        onNeutral = { selected.clear() },
+        onDismiss = { visible = false },
+        content = {
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                items(entries.size) { i ->
+                    val (t, u) = entries.entries.elementAt(i)
+                    content(t, selected, u)
+                }
+            }
+        })
+    Base(
+        title = title,
+        modifier = modifier.clickable { visible = true },
+        summary = summary,
+        enabled = enabled,
+        icon = icon
+    )
+}
+
+@JvmName("MultiplePopup")
+@Composable
+fun <T> PreferenceGroupScope.Popup(
+    key: Pref<Set<T>>,
+    entries: Map<T, String>,
+    title: String,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    enabled: Boolean = true,
+    icon: @Composable (() -> Unit)? = null,
+) = MultiplePopupCore(
+    key = key,
+    onSelectedChanged = { key.set(it.toSet()) },
+    entries = entries,
+    title = title,
+    modifier = modifier,
+    summary = summary,
+    enabled = enabled,
+    icon = icon,
+) { t, selected, label ->
+    Column {
+        RadioButton(
+            selected = t in selected,
+            onClick = { selected %= t })
+        Text(text = label, style = typography.bodyMedium)
+    }
+}
+
+@Composable
+fun <T> PreferenceGroupScope.Popup(
+    key: Pref<List<T>>,
+    entries: Map<T, String>,
+    title: String,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    enabled: Boolean = true,
+    icon: @Composable (() -> Unit)? = null,
+) = MultiplePopupCore(
+    key = key,
+    onSelectedChanged = { key.set(it) },
+    entries = entries,
+    title = title,
+    modifier = modifier,
+    summary = summary,
+    enabled = enabled,
+    icon = icon,
+) { t, selected, label ->
+    Row(
+        modifier = Modifier.clickable { selected %= t }.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        OrderBox(
+            order = (selected.indexOf(t) + 1).takeIf { t in selected },
+            enabled = enabled
+        ) { selected %= t }
+        Text(text = label, style = typography.bodyMedium)
+    }
+}
+
+@Composable
+fun <T, R> PreferenceGroupScope.Popup(
+    key: Pref<List<T>>,
+    entries: Map<T, R>,
+    present: @Composable RowScope.(R) -> Unit,
+    title: String,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    enabled: Boolean = true,
+    icon: @Composable (() -> Unit)? = null,
+) = MultiplePopupCore(
+    key = key,
+    onSelectedChanged = { key.set(it) },
+    entries = entries,
+    title = title,
+    modifier = modifier,
+    summary = summary,
+    enabled = enabled,
+    icon = icon,
+) { t, selected, label ->
+    Row(
+        modifier = Modifier.clickable { selected %= t }.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        OrderBox(
+            order = (selected.indexOf(t) + 1).takeIf { t in selected },
+            enabled = enabled
+        ) { selected %= t }
+        present(label)
+    }
+}
