@@ -22,12 +22,12 @@ internal fun PreferenceGroupScope.Base(
     modifier: Modifier = Modifier,
     summary: String? = null,
     enabled: Boolean = true,
-    elevation: Dp = 2.dp,
     titlePresent: @Composable (() -> Unit)? = null,
     summaryPresent: @Composable (() -> Unit)? = null,
-    info: @Composable (() -> Unit)? = null,
     icon: @Composable (() -> Unit)? = null,
+    info: @Composable (() -> Unit)? = null,
     trailing: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
 ) {
     val textColor by colorScheme.onSurface.status(enabled = enabled)
     val iconColor by colorScheme.onSurfaceVariant.status(enabled = enabled)

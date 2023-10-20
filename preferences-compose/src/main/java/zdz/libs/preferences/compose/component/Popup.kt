@@ -12,6 +12,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import zdz.libs.compose.ex.AlertDialog
 import zdz.libs.compose.ex.Dialog
 import zdz.libs.compose.ex.str
@@ -32,7 +34,12 @@ fun <T> PreferenceGroupScope.Popup(
     modifier: Modifier = Modifier,
     summary: String? = null,
     enabled: Boolean = true,
+    titlePresent: @Composable (() -> Unit)? = null,
+    summaryPresent: @Composable (() -> Unit)? = null,
     icon: @Composable (() -> Unit)? = null,
+    info: @Composable (() -> Unit)? = null,
+    trailing: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
 ) {
     var current by key.delegator
     val dialog = Dialog(
@@ -56,7 +63,12 @@ fun <T> PreferenceGroupScope.Popup(
         modifier = modifier.clickable { dialog.hide() },
         summary = summary,
         enabled = enabled,
+        titlePresent = titlePresent,
+        summaryPresent = summaryPresent,
         icon = icon,
+        info = info,
+        trailing = trailing,
+        elevation = elevation,
     )
 }
 
@@ -69,7 +81,12 @@ private inline fun <T, R> PreferenceGroupScope.MultiplePopupCore(
     modifier: Modifier = Modifier,
     summary: String? = null,
     enabled: Boolean = true,
+    noinline titlePresent: @Composable (() -> Unit)? = null,
+    noinline summaryPresent: @Composable (() -> Unit)? = null,
     noinline icon: @Composable (() -> Unit)? = null,
+    noinline info: @Composable (() -> Unit)? = null,
+    noinline trailing: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
     crossinline content: @Composable (T, selected: MutableList<T>, label: R) -> Unit,
 ) {
     var visible by remember { mutableStateOf(false) }
@@ -95,7 +112,12 @@ private inline fun <T, R> PreferenceGroupScope.MultiplePopupCore(
         modifier = modifier.clickable { visible = true },
         summary = summary,
         enabled = enabled,
-        icon = icon
+        titlePresent = titlePresent,
+        summaryPresent = summaryPresent,
+        icon = icon,
+        info = info,
+        trailing = trailing,
+        elevation = elevation,
     )
 }
 
@@ -108,7 +130,12 @@ fun <T> PreferenceGroupScope.Popup(
     modifier: Modifier = Modifier,
     summary: String? = null,
     enabled: Boolean = true,
+    titlePresent: @Composable (() -> Unit)? = null,
+    summaryPresent: @Composable (() -> Unit)? = null,
     icon: @Composable (() -> Unit)? = null,
+    info: @Composable (() -> Unit)? = null,
+    trailing: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
 ) = MultiplePopupCore(
     key = key,
     onSelectedChanged = { key.set(it.toSet()) },
@@ -117,7 +144,12 @@ fun <T> PreferenceGroupScope.Popup(
     modifier = modifier,
     summary = summary,
     enabled = enabled,
+    titlePresent = titlePresent,
+    summaryPresent = summaryPresent,
     icon = icon,
+    info = info,
+    trailing = trailing,
+    elevation = elevation,
 ) { t, selected, label ->
     Column {
         RadioButton(
@@ -135,7 +167,12 @@ fun <T> PreferenceGroupScope.Popup(
     modifier: Modifier = Modifier,
     summary: String? = null,
     enabled: Boolean = true,
+    titlePresent: @Composable (() -> Unit)? = null,
+    summaryPresent: @Composable (() -> Unit)? = null,
     icon: @Composable (() -> Unit)? = null,
+    info: @Composable (() -> Unit)? = null,
+    trailing: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
 ) = MultiplePopupCore(
     key = key,
     onSelectedChanged = { key.set(it) },
@@ -144,7 +181,12 @@ fun <T> PreferenceGroupScope.Popup(
     modifier = modifier,
     summary = summary,
     enabled = enabled,
+    titlePresent = titlePresent,
+    summaryPresent = summaryPresent,
     icon = icon,
+    info = info,
+    trailing = trailing,
+    elevation = elevation,
 ) { t, selected, label ->
     Row(
         modifier = Modifier.clickable { selected %= t }.fillMaxWidth(),
@@ -167,7 +209,12 @@ fun <T, R> PreferenceGroupScope.Popup(
     modifier: Modifier = Modifier,
     summary: String? = null,
     enabled: Boolean = true,
+    titlePresent: @Composable (() -> Unit)? = null,
+    summaryPresent: @Composable (() -> Unit)? = null,
     icon: @Composable (() -> Unit)? = null,
+    info: @Composable (() -> Unit)? = null,
+    trailing: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
 ) = MultiplePopupCore(
     key = key,
     onSelectedChanged = { key.set(it) },
@@ -176,7 +223,12 @@ fun <T, R> PreferenceGroupScope.Popup(
     modifier = modifier,
     summary = summary,
     enabled = enabled,
+    titlePresent = titlePresent,
+    summaryPresent = summaryPresent,
     icon = icon,
+    info = info,
+    trailing = trailing,
+    elevation = elevation,
 ) { t, selected, label ->
     Row(
         modifier = Modifier.clickable { selected %= t }.fillMaxWidth(),

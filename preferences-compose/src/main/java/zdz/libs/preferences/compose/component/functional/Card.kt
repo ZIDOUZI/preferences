@@ -1,8 +1,9 @@
-package zdz.libs.preferences.compose.component
+package zdz.libs.preferences.compose.component.functional
 
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import zdz.libs.preferences.compose.component.Base
 import zdz.libs.preferences.compose.contracts.PreferenceGroupScope
 
 @Composable

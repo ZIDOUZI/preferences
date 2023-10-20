@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import zdz.libs.preferences.compose.RowPresent
 import zdz.libs.preferences.compose.contracts.PreferenceGroupScope
 import zdz.libs.preferences.compose.delegator
@@ -27,10 +29,16 @@ inline fun <reified T> PreferenceGroupScope.SingleChip(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     flowRow: Boolean = false,
+    noinline titlePresent: @Composable (() -> Unit)? = null,
     noinline icon: @Composable (() -> Unit)? = null,
+    noinline info: @Composable (() -> Unit)? = null,
+    noinline trailing: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
 ) = Base(
     title = title,
     modifier = modifier,
+    enabled = enabled,
+    titlePresent = titlePresent,
     summaryPresent = {
         RowPresent(flowRow = flowRow) {
             val contain = null is T && (null as T) in entries.keys
@@ -45,6 +53,9 @@ inline fun <reified T> PreferenceGroupScope.SingleChip(
         }
     },
     icon = icon,
+    info = info,
+    trailing = trailing,
+    elevation = elevation,
 )
 
 @ExperimentalMaterial3Api
@@ -58,7 +69,11 @@ inline fun <reified E : Enum<E>> PreferenceGroupScope.SingleChip(
     label: (E) -> String = { it.name },
     enabled: Boolean = true,
     flowRow: Boolean = false,
+    noinline titlePresent: @Composable (() -> Unit)? = null,
     noinline icon: @Composable (() -> Unit)? = null,
+    noinline info: @Composable (() -> Unit)? = null,
+    noinline trailing: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
 ) = SingleChip(
     key = key,
     entries = buildMap {
@@ -69,7 +84,11 @@ inline fun <reified E : Enum<E>> PreferenceGroupScope.SingleChip(
     modifier = modifier,
     enabled = enabled,
     flowRow = flowRow,
-    icon = icon
+    titlePresent = titlePresent,
+    icon = icon,
+    info = info,
+    trailing = trailing,
+    elevation = elevation,
 )
 
 @ExperimentalMaterial3Api
@@ -82,7 +101,11 @@ inline fun <reified E : Enum<E>> PreferenceGroupScope.SingleChip(
     label: (E) -> String = { it.name },
     enabled: Boolean = true,
     flowRow: Boolean = false,
+    noinline titlePresent: @Composable (() -> Unit)? = null,
     noinline icon: @Composable (() -> Unit)? = null,
+    noinline info: @Composable (() -> Unit)? = null,
+    noinline trailing: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
 ) = SingleChip(
     key = key,
     entries = enumValues<E>().associateWith { label(it) },
@@ -90,7 +113,11 @@ inline fun <reified E : Enum<E>> PreferenceGroupScope.SingleChip(
     modifier = modifier,
     enabled = enabled,
     flowRow = flowRow,
-    icon = icon
+    titlePresent = titlePresent,
+    icon = icon,
+    info = info,
+    trailing = trailing,
+    elevation = elevation,
 )
 
 @ExperimentalLayoutApi
@@ -103,12 +130,18 @@ fun <T> PreferenceGroupScope.MultipleChip(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     flowRow: Boolean = false,
+    titlePresent: @Composable (() -> Unit)? = null,
     icon: @Composable (() -> Unit)? = null,
+    info: @Composable (() -> Unit)? = null,
+    trailing: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
 ) {
     var value by key.delegator
     Base(
         title = title,
         modifier = modifier,
+        enabled = enabled,
+        titlePresent = titlePresent,
         summaryPresent = {
             RowPresent(flowRow = flowRow) {
                 entries.forEach { (k, v) ->
@@ -122,6 +155,9 @@ fun <T> PreferenceGroupScope.MultipleChip(
             }
         },
         icon = icon,
+        info = info,
+        trailing = trailing,
+        elevation = elevation,
     )
 }
 
@@ -134,7 +170,11 @@ inline fun <reified E : Enum<E>> PreferenceGroupScope.MultipleChip(
     label: (E) -> String = { it.name },
     enabled: Boolean = true,
     flowRow: Boolean = false,
+    noinline titlePresent: @Composable (() -> Unit)? = null,
     noinline icon: @Composable (() -> Unit)? = null,
+    noinline info: @Composable (() -> Unit)? = null,
+    noinline trailing: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
 ) = MultipleChip(
     key = key,
     entries = enumValues<E>().associateWith { label(it) },
@@ -142,5 +182,9 @@ inline fun <reified E : Enum<E>> PreferenceGroupScope.MultipleChip(
     modifier = modifier,
     enabled = enabled,
     flowRow = flowRow,
-    icon = icon
+    titlePresent = titlePresent,
+    icon = icon,
+    info = info,
+    trailing = trailing,
+    elevation = elevation,
 )
