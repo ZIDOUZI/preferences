@@ -1,10 +1,10 @@
 package zdz.libs.preferences.compose.component.functional
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.expandVertically
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
@@ -20,6 +20,11 @@ import androidx.compose.ui.unit.dp
 import zdz.libs.preferences.compose.component.Base
 import zdz.libs.preferences.compose.contracts.PreferenceGroupScope
 
+private val defaultTransitionScope =
+    fun AnimatedContentTransitionScope<Boolean>.(): ContentTransform =
+        fadeIn() + slideInVertically { if (targetState) it else -it } togetherWith fadeOut() + slideOutVertically { if (targetState) -it else it }
+
+
 @Composable
 fun PreferenceGroupScope.Expand(
     title: String,
@@ -27,6 +32,7 @@ fun PreferenceGroupScope.Expand(
     summary: String? = null,
     enabled: Boolean = true,
     hideWhenExpanded: Boolean = false,
+    transitionSpec: AnimatedContentTransitionScope<Boolean>.() -> ContentTransform = defaultTransitionScope,
     titlePresent: @Composable (() -> Unit)? = null,
     summaryPresent: @Composable (() -> Unit)? = null,
     icon: @Composable (() -> Unit)? = null,
@@ -38,9 +44,7 @@ fun PreferenceGroupScope.Expand(
     var expanded by remember { mutableStateOf(false) }
     AnimatedContent(
         targetState = expanded,
-        transitionSpec = {
-            fadeIn() + slideInVertically { if (targetState) it else -it } togetherWith fadeOut() + slideOutVertically { if (targetState) -it else it }
-        },
+        transitionSpec = transitionSpec,
         label = title,
     ) {
         if (it) {
