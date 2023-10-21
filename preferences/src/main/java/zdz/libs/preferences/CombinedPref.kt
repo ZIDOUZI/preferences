@@ -7,10 +7,12 @@ import androidx.datastore.preferences.core.emptyPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import zdz.libs.preferences.annotations.ExperimentalPrefApi
 import zdz.libs.preferences.annotations.SubtlePrefApi
 import zdz.libs.preferences.utils.setOrDelete
 import java.io.IOException
 
+@ExperimentalPrefApi
 @SubtlePrefApi
 class CombinedPref<T>(
     private val ds: DataStore<Preferences>,

@@ -26,11 +26,16 @@ data class Builder<T>(
         }
 
     fun <R> map(serializer: Serializer<T, R>) =
-        MappedBuilder(ds, default, key, cache, serializer)
+        MappedBuilder(ds, default, key, serializer, cache)
+
+    fun <R> map(convert: (T) -> R, reverse: (R) -> T) =
+        map(Serializer(convert, reverse))
 
     companion object {
-        fun <T> DataStore<Preferences>.build(default: T, key: (String) -> Preferences.Key<T & Any>) =
-            Builder(this, default, key)
+        fun <T> DataStore<Preferences>.build(
+            default: T,
+            key: (String) -> Preferences.Key<T & Any>
+        ) = Builder(this, default, key)
 
         fun <T : Any?> DataStore<Preferences>.build(key: (String) -> Preferences.Key<T & Any>) =
             Builder(this, null, key)
@@ -41,8 +46,8 @@ data class MappedBuilder<S, T>(
     var ds: DataStore<Preferences>,
     var default: S,
     var key: (String) -> Preferences.Key<S & Any>,
+    var serializer: Serializer<S, T>,
     var cache: Boolean = false,
-    var serializer: Serializer<S, T>
 ) : ReadOnlyProperty<Any?, Pref<T>> {
     override fun getValue(thisRef: Any?, property: KProperty<*>): Pref<T> =
         key(property.name).let {
@@ -52,4 +57,19 @@ data class MappedBuilder<S, T>(
                 PrefImpl(ds, default, it)
             }
         }.map(serializer)
+
+    companion object {
+        fun <S, T> DataStore<Preferences>.build(
+            default: S,
+            key: (String) -> Preferences.Key<S & Any>,
+            serializer: Serializer<S, T>,
+            cache: Boolean = false
+        ) = MappedBuilder(this, default, key, serializer, cache)
+
+        fun <S, T> DataStore<Preferences>.build(
+            key: (String) -> Preferences.Key<S & Any>,
+            serializer: Serializer<S?, T>,
+            cache: Boolean = false
+        ) = MappedBuilder(this, null, key, serializer, cache)
+    }
 }

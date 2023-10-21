@@ -17,12 +17,6 @@ import zdz.libs.preferences.model.Builder.Companion.build
 operator fun DataStore<Preferences>.get(default: Int) =
     build(default, ::intPreferencesKey)
 
-operator fun DataStore<Preferences>.get(default: Long) =
-    build(default, ::longPreferencesKey)
-
-operator fun DataStore<Preferences>.get(default: Float) =
-    build(default, ::floatPreferencesKey)
-
 operator fun DataStore<Preferences>.get(default: Double) =
     build(default, ::doublePreferencesKey)
 
@@ -31,6 +25,12 @@ operator fun DataStore<Preferences>.get(default: String) =
 
 operator fun DataStore<Preferences>.get(default: Boolean) =
     build(default, ::booleanPreferencesKey)
+
+operator fun DataStore<Preferences>.get(default: Float) =
+    build(default, ::floatPreferencesKey)
+
+operator fun DataStore<Preferences>.get(default: Long) =
+    build(default, ::longPreferencesKey)
 
 operator fun DataStore<Preferences>.get(default: Set<String>) =
     build(default, ::stringSetPreferencesKey)
@@ -83,23 +83,23 @@ fun DataStore<Preferences>.nullable(default: Boolean) =
  * Nullable Constructors, contains [Int], [Long], [Float], [String], [Boolean], [StringSet][Set].
  * The default value is null.
  */
-fun DataStore<Preferences>.boolean() =
-    build(::booleanPreferencesKey)
-
 fun DataStore<Preferences>.int() =
     build(::intPreferencesKey)
-
-fun DataStore<Preferences>.long() =
-    build(::longPreferencesKey)
-
-fun DataStore<Preferences>.float() =
-    build(::floatPreferencesKey)
 
 fun DataStore<Preferences>.double() =
     build(::doublePreferencesKey)
 
 fun DataStore<Preferences>.string() =
     build(::stringPreferencesKey)
+
+fun DataStore<Preferences>.boolean() =
+    build(::booleanPreferencesKey)
+
+fun DataStore<Preferences>.float() =
+    build(::floatPreferencesKey)
+
+fun DataStore<Preferences>.long() =
+    build(::longPreferencesKey)
 
 fun DataStore<Preferences>.stringSet() =
     build(::stringSetPreferencesKey)
