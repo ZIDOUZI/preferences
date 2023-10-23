@@ -26,7 +26,7 @@ ui-graphic = { group = "androidx.compose.ui", name = "ui-graphics" }
 
 lifecycle-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref="lifecycle" }
 
-zdz-compose-ex  = { group = "com.github.ZIDOUZI", name = "compose-ex", version = "1.0.0-alpha06" }
+zdz-compose-ex  = { group = "com.github.ZIDOUZI", name = "compose-ex", version = "+" }
 
 coroutines-core-jvm = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core-jvm", version.ref = "coroutine" }
 

@@ -10,6 +10,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,6 +20,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import zdz.libs.preferences.compose.component.Base
 import zdz.libs.preferences.compose.contracts.PreferenceGroupScope
+import zdz.libs.preferences.compose.delegator
+import zdz.libs.preferences.contracts.Pref
 
 private val defaultTransitionScope =
     fun AnimatedContentTransitionScope<Boolean>.(): ContentTransform =
@@ -29,6 +32,7 @@ private val defaultTransitionScope =
 fun PreferenceGroupScope.Expand(
     title: String,
     modifier: Modifier = Modifier,
+    key: Pref<Boolean>? = null,
     summary: String? = null,
     enabled: Boolean = true,
     hideWhenExpanded: Boolean = false,
@@ -41,7 +45,50 @@ fun PreferenceGroupScope.Expand(
     elevation: Dp = 2.dp,
     content: @Composable PreferenceGroupScope.() -> Unit,
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by key?.delegator ?: remember<MutableState<Boolean>> { mutableStateOf(false) }
+    AnimatedContent(
+        targetState = expanded,
+        transitionSpec = transitionSpec,
+        label = title,
+    ) {
+        if (it) {
+            content()
+        }
+        if (!it && !hideWhenExpanded) {
+            Base(
+                title = title,
+                modifier = modifier.clickable { expanded = !expanded },
+                summary = summary,
+                enabled = enabled,
+                titlePresent = titlePresent,
+                summaryPresent = summaryPresent,
+                icon = icon,
+                info = info,
+                trailing = trailing,
+                elevation = elevation,
+            )
+        }
+    }
+}
+
+@Composable
+fun PreferenceGroupScope.Expand(
+    title: String,
+    modifier: Modifier = Modifier,
+    state: MutableState<Boolean> = remember { mutableStateOf(false) },
+    summary: String? = null,
+    enabled: Boolean = true,
+    hideWhenExpanded: Boolean = false,
+    transitionSpec: AnimatedContentTransitionScope<Boolean>.() -> ContentTransform = defaultTransitionScope,
+    titlePresent: @Composable (() -> Unit)? = null,
+    summaryPresent: @Composable (() -> Unit)? = null,
+    icon: @Composable (() -> Unit)? = null,
+    info: @Composable (() -> Unit)? = null,
+    trailing: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
+    content: @Composable PreferenceGroupScope.() -> Unit,
+) {
+    var expanded by state
     AnimatedContent(
         targetState = expanded,
         transitionSpec = transitionSpec,
