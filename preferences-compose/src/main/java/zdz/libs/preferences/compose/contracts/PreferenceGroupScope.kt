@@ -1,3 +1,5 @@
 package zdz.libs.preferences.compose.contracts
 
-interface PreferenceGroupScope
+import androidx.compose.foundation.layout.ColumnScope
+
+interface PreferenceGroupScope: ColumnScope

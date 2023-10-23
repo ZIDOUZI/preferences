@@ -18,7 +18,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import zdz.libs.preferences.StaticPref
 import zdz.libs.preferences.compose.component.Base
+import zdz.libs.preferences.compose.component.Switch
 import zdz.libs.preferences.compose.contracts.PreferenceGroupScope
 import zdz.libs.preferences.compose.delegator
 import zdz.libs.preferences.contracts.Pref
@@ -35,7 +37,6 @@ fun PreferenceGroupScope.Expand(
     key: Pref<Boolean>? = null,
     summary: String? = null,
     enabled: Boolean = true,
-    hideWhenExpanded: Boolean = false,
     transitionSpec: AnimatedContentTransitionScope<Boolean>.() -> ContentTransform = defaultTransitionScope,
     titlePresent: @Composable (() -> Unit)? = null,
     summaryPresent: @Composable (() -> Unit)? = null,
@@ -53,8 +54,7 @@ fun PreferenceGroupScope.Expand(
     ) {
         if (it) {
             content()
-        }
-        if (!it && !hideWhenExpanded) {
+        } else {
             Base(
                 title = title,
                 modifier = modifier.clickable { expanded = !expanded },
@@ -78,7 +78,6 @@ fun PreferenceGroupScope.Expand(
     state: MutableState<Boolean> = remember { mutableStateOf(false) },
     summary: String? = null,
     enabled: Boolean = true,
-    hideWhenExpanded: Boolean = false,
     transitionSpec: AnimatedContentTransitionScope<Boolean>.() -> ContentTransform = defaultTransitionScope,
     titlePresent: @Composable (() -> Unit)? = null,
     summaryPresent: @Composable (() -> Unit)? = null,
@@ -96,8 +95,7 @@ fun PreferenceGroupScope.Expand(
     ) {
         if (it) {
             content()
-        }
-        if (!it && !hideWhenExpanded) {
+        } else {
             Base(
                 title = title,
                 modifier = modifier.clickable { expanded = !expanded },
@@ -108,6 +106,85 @@ fun PreferenceGroupScope.Expand(
                 icon = icon,
                 info = info,
                 trailing = trailing,
+                elevation = elevation,
+            )
+        }
+    }
+}
+
+@Composable
+fun PreferenceGroupScope.ExpandSwitch(
+    key: Pref<Boolean>,
+    title: String,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    enabled: Boolean = true,
+    transitionSpec: AnimatedContentTransitionScope<Boolean>.() -> ContentTransform = defaultTransitionScope,
+    titlePresent: @Composable (() -> Unit)? = null,
+    summaryPresent: @Composable (() -> Unit)? = null,
+    icon: @Composable (() -> Unit)? = null,
+    info: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
+    content: @Composable PreferenceGroupScope.() -> Unit,
+) {
+    var expanded by key.delegator
+    AnimatedContent(
+        targetState = expanded,
+        transitionSpec = transitionSpec,
+        label = title,
+    ) {
+        if (it) {
+            content()
+        } else {
+            Switch(
+                key = key,
+                title = title,
+                modifier = modifier.clickable { expanded = !expanded },
+                summary = summary,
+                enabled = enabled,
+                titlePresent = titlePresent,
+                summaryPresent = summaryPresent,
+                icon = icon,
+                info = info,
+                elevation = elevation,
+            )
+        }
+    }
+}
+
+@Composable
+fun PreferenceGroupScope.Expand(
+    title: String,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    enabled: Boolean = true,
+    transitionSpec: AnimatedContentTransitionScope<Boolean>.() -> ContentTransform = defaultTransitionScope,
+    titlePresent: @Composable (() -> Unit)? = null,
+    summaryPresent: @Composable (() -> Unit)? = null,
+    icon: @Composable (() -> Unit)? = null,
+    info: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
+    content: @Composable PreferenceGroupScope.() -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    AnimatedContent(
+        targetState = expanded,
+        transitionSpec = transitionSpec,
+        label = title,
+    ) {
+        if (it) {
+            content()
+        } else {
+            Switch(
+                key = StaticPref(false),
+                title = title,
+                modifier = modifier.clickable { expanded = !expanded },
+                summary = summary,
+                enabled = enabled,
+                titlePresent = titlePresent,
+                summaryPresent = summaryPresent,
+                icon = icon,
+                info = info,
                 elevation = elevation,
             )
         }
