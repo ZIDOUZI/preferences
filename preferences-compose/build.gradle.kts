@@ -38,9 +38,6 @@ android {
 afterEvaluate {
     publishing.publications.create<MavenPublication>("release") {
         from(components["release"])
-        groupId = "com.github.ZIDOUZI.preferences"
-        artifactId = "preferences-compose"
-        version = "1.0.0-alpha08"
     }
 }
 
