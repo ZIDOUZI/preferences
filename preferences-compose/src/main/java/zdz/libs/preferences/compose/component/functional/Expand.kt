@@ -9,6 +9,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -94,7 +95,7 @@ fun PreferenceGroupScope.Expand(
         label = title,
     ) {
         if (it) {
-            content()
+            Column { content() }
         } else {
             Base(
                 title = title,
@@ -134,7 +135,7 @@ fun PreferenceGroupScope.ExpandSwitch(
         label = title,
     ) {
         if (it) {
-            content()
+            Column { content() } // TODO:
         } else {
             Switch(
                 key = key,
@@ -153,7 +154,7 @@ fun PreferenceGroupScope.ExpandSwitch(
 }
 
 @Composable
-fun PreferenceGroupScope.Expand(
+fun PreferenceGroupScope.ExpandSwitch(
     title: String,
     modifier: Modifier = Modifier,
     summary: String? = null,
@@ -173,7 +174,7 @@ fun PreferenceGroupScope.Expand(
         label = title,
     ) {
         if (it) {
-            content()
+            Column { content() }
         } else {
             Switch(
                 key = StaticPref(false),

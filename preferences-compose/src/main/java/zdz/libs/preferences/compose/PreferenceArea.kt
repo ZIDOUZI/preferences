@@ -61,6 +61,6 @@ class PreferenceAreaScope internal constructor(
             color = colorScheme.tertiary
         )
         if (divider) HorizontalDivider()
-        object : PreferenceGroupScope, ColumnScope by this {}.content()
+        PreferenceGroupImpl.content()
     } else Unit
 }
