@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.StateFactoryMarker
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,6 +20,7 @@ val <T> Pref<T>.state
     @Composable
     get() = flow.collectAsStateWithLifecycle(default).value
 
+@StateFactoryMarker
 fun <T> Pref<T>.toMutalbeState(): MutableState<T> = object : MutableState<T> {
     override var value: T
         get() = runBlocking(PreferenceIOScope.coroutineContext) { current() }
@@ -80,10 +82,6 @@ private fun <T> Pref<T>.getMutableFlow(): MutableStateFlow<T> = MutableStateFlow
     }
     
 }
-
-val <T> Pref<out Collection<T>>.state
-    @Composable
-    get() = flow.collectAsStateWithLifecycle(emptySet()).value
 
 operator fun <T> Set<T>.rem(item: T) = if (item in this) this - item else this + item
 

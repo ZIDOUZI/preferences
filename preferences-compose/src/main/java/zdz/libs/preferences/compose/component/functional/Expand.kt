@@ -2,6 +2,7 @@ package zdz.libs.preferences.compose.component.functional
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -24,7 +25,11 @@ import zdz.libs.preferences.compose.component.Base
 import zdz.libs.preferences.compose.component.Switch
 import zdz.libs.preferences.compose.contracts.PreferenceGroupScope
 import zdz.libs.preferences.compose.delegator
+import zdz.libs.preferences.compose.state
 import zdz.libs.preferences.contracts.Pref
+
+private val enter = fadeIn() + slideInVertically()
+private val exit = fadeOut() + slideOutVertically()
 
 private val defaultTransitionScope =
     fun AnimatedContentTransitionScope<Boolean>.(): ContentTransform =
@@ -35,7 +40,7 @@ private val defaultTransitionScope =
 fun PreferenceGroupScope.Expand(
     title: String,
     modifier: Modifier = Modifier,
-    key: Pref<Boolean>? = null,
+    key: Pref<Boolean> = StaticPref(false),
     summary: String? = null,
     enabled: Boolean = true,
     transitionSpec: AnimatedContentTransitionScope<Boolean>.() -> ContentTransform = defaultTransitionScope,
@@ -47,14 +52,14 @@ fun PreferenceGroupScope.Expand(
     elevation: Dp = 2.dp,
     content: @Composable PreferenceGroupScope.() -> Unit,
 ) {
-    var expanded by key?.delegator ?: remember<MutableState<Boolean>> { mutableStateOf(false) }
+    var expanded by key.delegator
     AnimatedContent(
         targetState = expanded,
         transitionSpec = transitionSpec,
         label = title,
     ) {
         if (it) {
-            content()
+            Column { content() }
         } else {
             Base(
                 title = title,
@@ -120,36 +125,28 @@ fun PreferenceGroupScope.ExpandSwitch(
     modifier: Modifier = Modifier,
     summary: String? = null,
     enabled: Boolean = true,
-    transitionSpec: AnimatedContentTransitionScope<Boolean>.() -> ContentTransform = defaultTransitionScope,
     titlePresent: @Composable (() -> Unit)? = null,
     summaryPresent: @Composable (() -> Unit)? = null,
     icon: @Composable (() -> Unit)? = null,
     info: @Composable (() -> Unit)? = null,
     elevation: Dp = 2.dp,
-    content: @Composable PreferenceGroupScope.() -> Unit,
+    content: @Composable (PreferenceGroupScope.() -> Unit),
 ) {
     var expanded by key.delegator
-    AnimatedContent(
-        targetState = expanded,
-        transitionSpec = transitionSpec,
-        label = title,
-    ) {
-        if (it) {
-            Column { content() } // TODO:
-        } else {
-            Switch(
-                key = key,
-                title = title,
-                modifier = modifier.clickable { expanded = !expanded },
-                summary = summary,
-                enabled = enabled,
-                titlePresent = titlePresent,
-                summaryPresent = summaryPresent,
-                icon = icon,
-                info = info,
-                elevation = elevation,
-            )
-        }
+    Switch(
+        key = key,
+        title = title,
+        modifier = modifier.clickable { expanded = !expanded },
+        summary = summary,
+        enabled = enabled,
+        titlePresent = titlePresent,
+        summaryPresent = summaryPresent,
+        icon = icon,
+        info = info,
+        elevation = elevation,
+    )
+    AnimatedVisibility(visible = expanded, label = title, enter = enter, exit = exit) {
+        Column { content() } // TODO:
     }
 }
 
@@ -159,35 +156,27 @@ fun PreferenceGroupScope.ExpandSwitch(
     modifier: Modifier = Modifier,
     summary: String? = null,
     enabled: Boolean = true,
-    transitionSpec: AnimatedContentTransitionScope<Boolean>.() -> ContentTransform = defaultTransitionScope,
     titlePresent: @Composable (() -> Unit)? = null,
     summaryPresent: @Composable (() -> Unit)? = null,
     icon: @Composable (() -> Unit)? = null,
     info: @Composable (() -> Unit)? = null,
     elevation: Dp = 2.dp,
-    content: @Composable PreferenceGroupScope.() -> Unit,
+    content: @Composable (PreferenceGroupScope.() -> Unit),
 ) {
-    var expanded by remember { mutableStateOf(false) }
-    AnimatedContent(
-        targetState = expanded,
-        transitionSpec = transitionSpec,
-        label = title,
-    ) {
-        if (it) {
-            Column { content() }
-        } else {
-            Switch(
-                key = StaticPref(false),
-                title = title,
-                modifier = modifier.clickable { expanded = !expanded },
-                summary = summary,
-                enabled = enabled,
-                titlePresent = titlePresent,
-                summaryPresent = summaryPresent,
-                icon = icon,
-                info = info,
-                elevation = elevation,
-            )
-        }
+    val key = StaticPref(false)
+    Switch(
+        key = StaticPref(false),
+        title = title,
+        modifier = modifier,
+        summary = summary,
+        enabled = enabled,
+        titlePresent = titlePresent,
+        summaryPresent = summaryPresent,
+        icon = icon,
+        info = info,
+        elevation = elevation,
+    )
+    AnimatedVisibility(visible = key.state, label = title, enter = enter, exit = exit) {
+        Column { content() } // TODO:
     }
 }
