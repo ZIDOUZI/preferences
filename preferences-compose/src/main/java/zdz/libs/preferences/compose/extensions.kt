@@ -3,22 +3,30 @@ package zdz.libs.preferences.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.StateFactoryMarker
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingCommand
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import zdz.libs.preferences.contracts.Pref
 import zdz.libs.preferences.model.PreferenceIOScope
-import zdz.libs.preferences.model.get
 
 val <T> Pref<T>.state
     @Composable
-    get() = flow.collectAsStateWithLifecycle(default).value
+    get() = flow.collectAsState(default).value
 
 @StateFactoryMarker
 fun <T> Pref<T>.toMutalbeState(): MutableState<T> = object : MutableState<T> {
@@ -37,12 +45,9 @@ fun <T> Pref<T>.toMutalbeState(): MutableState<T> = object : MutableState<T> {
 
 val <T> Pref<T>.delegator: MutableState<T>
     @Composable
-    get() = rememberSaveable { mutableStateOf(default) }.apply {
-        val lifecycle = LocalLifecycleOwner.current.lifecycle
+    get() = remember { mutableStateOf(default) }.apply {
         LaunchedEffect(Unit) {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                flow.collect { value = it }
-            }
+            flow.collect { value = it }
         }
         LaunchedEffect(value) {
             withContext(PreferenceIOScope.coroutineContext) { emit(value) }
