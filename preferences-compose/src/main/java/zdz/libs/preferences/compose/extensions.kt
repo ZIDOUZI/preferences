@@ -7,9 +7,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.StateFactoryMarker
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,8 +42,8 @@ fun <T> Pref<T>.toMutalbeState(): MutableState<T> = object : MutableState<T> {
 
 val <T> Pref<T>.delegator: MutableState<T>
     @Composable
-    get() = remember { mutableStateOf(default) }.apply {
-        LaunchedEffect(Unit) {
+    get() = remember { mutableStateOf(default) }.apply { // rememberSaveable is not necessary
+        LaunchedEffect(Unit) { // TODO: use lifecycle will cause an except emit of default value
             flow.collect { value = it }
         }
         LaunchedEffect(value) {

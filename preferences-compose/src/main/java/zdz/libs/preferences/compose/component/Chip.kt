@@ -19,8 +19,7 @@ import zdz.libs.preferences.contracts.Pref
 import zdz.libs.preferences.model.editAsync
 
 
-@ExperimentalLayoutApi
-@ExperimentalMaterial3Api
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 inline fun <reified T> PreferenceGroupScope.SingleChip(
     key: Pref<T>,
@@ -58,8 +57,6 @@ inline fun <reified T> PreferenceGroupScope.SingleChip(
     elevation = elevation,
 )
 
-@ExperimentalMaterial3Api
-@ExperimentalLayoutApi
 @Composable
 inline fun <reified E : Enum<E>> PreferenceGroupScope.SingleChip(
     key: Pref<E?>,
@@ -91,8 +88,6 @@ inline fun <reified E : Enum<E>> PreferenceGroupScope.SingleChip(
     elevation = elevation,
 )
 
-@ExperimentalMaterial3Api
-@ExperimentalLayoutApi
 @Composable
 inline fun <reified E : Enum<E>> PreferenceGroupScope.SingleChip(
     key: Pref<E>,
@@ -120,8 +115,7 @@ inline fun <reified E : Enum<E>> PreferenceGroupScope.SingleChip(
     elevation = elevation,
 )
 
-@ExperimentalLayoutApi
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun <T> PreferenceGroupScope.MultipleChip(
     key: Pref<Set<T>>,
@@ -161,7 +155,6 @@ fun <T> PreferenceGroupScope.MultipleChip(
     )
 }
 
-@ExperimentalLayoutApi
 @Composable
 inline fun <reified E : Enum<E>> PreferenceGroupScope.MultipleChip(
     key: Pref<Set<E>>,

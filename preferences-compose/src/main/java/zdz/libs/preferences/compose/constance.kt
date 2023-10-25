@@ -38,7 +38,6 @@ import zdz.libs.compose.ex.SquircleShape
 import zdz.libs.compose.ex.status
 import zdz.libs.compose.ex.takeUnless
 
-
 internal val elevationModifier = Modifier.shadow(2.dp)
 @SuppressLint("ModifierFactoryExtensionFunction")
 internal fun elevationModifier(elevation: Dp) = if (elevation.value == 2f) elevationModifier else Modifier.shadow(elevation)
@@ -97,7 +96,8 @@ internal fun OrderBox(
 
 @ExperimentalLayoutApi
 @Composable
-fun RowPresent(
+@PublishedApi
+internal fun RowPresent(
     modifier: Modifier = Modifier,
     flowRow: Boolean = false,
     space: Dp = 4.dp,
