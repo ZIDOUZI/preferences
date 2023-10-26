@@ -75,13 +75,13 @@ fun PreferenceGroupScope.Slider(
     enabled = enabled,
     titlePresent = titlePresent,
     summaryPresent = {
-        var value by key.delegator
+        val (get, set) = key.delegator
         m3Slider(
-            value = value,
+            value = get,
             steps = steps,
             enabled = enabled,
             valueRange = range,
-            onValueChange = { value = it }
+            onValueChange = set
         )
     },
     icon = icon,
