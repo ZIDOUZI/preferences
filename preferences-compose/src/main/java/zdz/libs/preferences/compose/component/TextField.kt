@@ -40,6 +40,7 @@ fun PreferenceGroupScope.TextField(
 )
 
 @Composable
+@JvmName("TextFieldNullable")
 fun PreferenceGroupScope.TextField(
     key: Pref<String?>,
     title: String,
