@@ -1,6 +1,5 @@
 package zdz.libs.preferences.contracts
 
 interface CachedPref<T> : Pref<T> {
-    val cacheValue: T
-    val validate: Boolean
+    val cacheValue: T?
 }

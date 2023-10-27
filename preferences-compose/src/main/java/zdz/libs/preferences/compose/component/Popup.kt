@@ -72,6 +72,37 @@ fun <T> PreferenceGroupScope.Popup(
     )
 }
 
+@JvmName("SinglePopup")
+@Composable
+inline fun <reified E : Enum<E>> PreferenceGroupScope.Popup(
+    key: Pref<E>,
+    entries: Array<E> = enumValues<E>(),
+    label: (E) -> String = { it.name },
+    title: String,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    enabled: Boolean = true,
+    noinline titlePresent: @Composable (() -> Unit)? = null,
+    noinline summaryPresent: @Composable (() -> Unit)? = null,
+    noinline icon: @Composable (() -> Unit)? = null,
+    noinline info: @Composable (() -> Unit)? = null,
+    noinline trailing: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
+) = Popup(
+    key = key,
+    entries = entries.associateWith(label),
+    title = title,
+    modifier = modifier,
+    summary = summary,
+    enabled = enabled,
+    titlePresent = titlePresent,
+    summaryPresent = summaryPresent,
+    icon = icon,
+    info = info,
+    trailing = trailing,
+    elevation = elevation
+)
+
 @Composable
 private inline fun <T, R> PreferenceGroupScope.MultiplePopupCore(
     key: Pref<out Collection<T>>,
