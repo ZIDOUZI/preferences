@@ -31,7 +31,7 @@ internal class MappedPref<S, T>(
             .map { serialize(it[key] ?: deserialized) }
 
     override suspend fun edit(block: suspend (T) -> T?): T? = ds.edit l@{ p ->
-        if (cacheValue == p[key]) return@l
+        if (cacheValue == p[key] && cache) return@l
         block(serialize(p.getValue())).let {
             cacheValue = it ?: default
             p.setOrDelete(key, it?.let { deserialize(it) })
@@ -44,7 +44,6 @@ internal class MappedPref<S, T>(
     }
 
     override var cacheValue: T? = null
-        get() = if (cache) field else error("This Pref is not cached.")
 
     fun <R> map(otherSerializer: Serializer<T, R>) =
         MappedPref(ds, otherSerializer.serialize(default), key, serializer * otherSerializer)
