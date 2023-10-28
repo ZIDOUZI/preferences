@@ -36,7 +36,6 @@ value class IEnumSetSerializer<E : Enum<E>>(private val entries: List<E>) :
 }
 
 
-
 inline operator fun <reified E : Enum<E>> DataStore<Preferences>.get(
     default: E,
     serializer: Serializer<Int, E> = EnumSerializer(enumValues<E>().toList()),
@@ -63,7 +62,9 @@ inline fun <reified E : Enum<E>> DataStore<Preferences>.enumSet(
     default: Set<E> = setOf(),
     serializer: Serializer<Int, Set<E>> = IEnumSetSerializer(enumValues<E>().toList()),
     cache: Boolean = true,
-) = build(serializer.deserialize(default), ::intPreferencesKey, serializer, cache)
+) = build(serializer.deserialize(default), ::intPreferencesKey, serializer, cache).apply {
+    require(enumValues<E>().size <= 32) { "EnumSet can only hold up to 32 elements. To hold up more, use your self Serializer." }
+}
 
 inline fun <reified E : Enum<E>> DataStore<Preferences>.enumList(
     default: List<E> = listOf(),

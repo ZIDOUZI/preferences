@@ -6,20 +6,20 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import zdz.libs.preferences.annotations.ShadowedCoroutinesApi
 import zdz.libs.preferences.compose.RowPresent
 import zdz.libs.preferences.compose.contracts.PreferenceGroupScope
 import zdz.libs.preferences.compose.delegator
 import zdz.libs.preferences.compose.rem
-import zdz.libs.preferences.compose.state
 import zdz.libs.preferences.contracts.Pref
-import zdz.libs.preferences.model.editAsync
+import zdz.libs.preferences.model.deleteAsync
 
-
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class, ShadowedCoroutinesApi::class)
 @Composable
 inline fun <reified T> PreferenceGroupScope.SingleChip(
     key: Pref<T>,
@@ -40,11 +40,12 @@ inline fun <reified T> PreferenceGroupScope.SingleChip(
     titlePresent = titlePresent,
     summaryPresent = {
         RowPresent(flowRow = flowRow) {
-            val contain = null is T && (null as T) in entries.keys
+            var value by key.delegator
+            val contain = remember(entries) { null is T && (null as T) in entries.keys }
             entries.forEach { (k, v) ->
                 FilterChip(
-                    selected = key.state == k,
-                    onClick = { key.editAsync { if (!contain && it == k) null else k } },
+                    selected = value == k,
+                    onClick = { if (!contain && value == k) key.deleteAsync() else value = k },
                     label = { Text(text = v) },
                     enabled = enabled,
                 )
@@ -117,6 +118,83 @@ inline fun <reified E : Enum<E>> PreferenceGroupScope.SingleChip(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
+fun PreferenceGroupScope.MultipleChip(
+    keys: List<Pair<Pref<Boolean>, String>>,
+    title: String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    flowRow: Boolean = false,
+    titlePresent: @Composable (() -> Unit)? = null,
+    icon: @Composable (() -> Unit)? = null,
+    info: @Composable (() -> Unit)? = null,
+    trailing: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
+) = Base(
+    title = title,
+    modifier = modifier,
+    enabled = enabled,
+    titlePresent = titlePresent,
+    summaryPresent = {
+        RowPresent(flowRow = flowRow) {
+            keys.forEach { (key, label) ->
+                var value by key.delegator
+                FilterChip(
+                    selected = value,
+                    onClick = { value = !value },
+                    label = { Text(text = label) },
+                    enabled = enabled,
+                )
+            }
+        }
+    },
+    icon = icon,
+    info = info,
+    trailing = trailing,
+    elevation = elevation,
+)
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
+fun <T> PreferenceGroupScope.MultipleChip(
+    key: Pref<T>,
+    entries: List<String>,
+    contains: T.(Int) -> Boolean,
+    changed: T.(Int) -> T,
+    title: String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    flowRow: Boolean = false,
+    titlePresent: @Composable (() -> Unit)? = null,
+    icon: @Composable (() -> Unit)? = null,
+    info: @Composable (() -> Unit)? = null,
+    trailing: @Composable (() -> Unit)? = null,
+    elevation: Dp = 2.dp,
+) = Base(
+    title = title,
+    modifier = modifier,
+    enabled = enabled,
+    titlePresent = titlePresent,
+    summaryPresent = {
+        RowPresent(flowRow = flowRow) {
+            var value by key.delegator
+            entries.forEachIndexed { i, s ->
+                FilterChip(
+                    selected = value.contains(i),
+                    onClick = { value = value.changed(i) },
+                    label = { Text(text = s) },
+                    enabled = enabled,
+                )
+            }
+        }
+    },
+    icon = icon,
+    info = info,
+    trailing = trailing,
+    elevation = elevation,
+)
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
 fun <T> PreferenceGroupScope.MultipleChip(
     key: Pref<Set<T>>,
     entries: Map<T, String>,
@@ -129,31 +207,29 @@ fun <T> PreferenceGroupScope.MultipleChip(
     info: @Composable (() -> Unit)? = null,
     trailing: @Composable (() -> Unit)? = null,
     elevation: Dp = 2.dp,
-) {
-    var value by key.delegator
-    Base(
-        title = title,
-        modifier = modifier,
-        enabled = enabled,
-        titlePresent = titlePresent,
-        summaryPresent = {
-            RowPresent(flowRow = flowRow) {
-                entries.forEach { (k, v) ->
-                    FilterChip(
-                        selected = k in value,
-                        onClick = { value %= k },
-                        label = { Text(text = v) },
-                        enabled = enabled,
-                    )
-                }
+) = Base(
+    title = title,
+    modifier = modifier,
+    enabled = enabled,
+    titlePresent = titlePresent,
+    summaryPresent = {
+        RowPresent(flowRow = flowRow) {
+            var value by key.delegator
+            entries.forEach { (k, v) ->
+                FilterChip(
+                    selected = k in value,
+                    onClick = { value %= k },
+                    label = { Text(text = v) },
+                    enabled = enabled,
+                )
             }
-        },
-        icon = icon,
-        info = info,
-        trailing = trailing,
-        elevation = elevation,
-    )
-}
+        }
+    },
+    icon = icon,
+    info = info,
+    trailing = trailing,
+    elevation = elevation,
+)
 
 @Composable
 inline fun <reified E : Enum<E>> PreferenceGroupScope.MultipleChip(

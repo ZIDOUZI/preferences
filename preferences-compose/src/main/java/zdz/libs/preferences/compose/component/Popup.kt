@@ -27,7 +27,7 @@ import zdz.libs.preferences.model.set
 
 @JvmName("SinglePopup")
 @Composable
-fun <T> PreferenceGroupScope.Popup(
+fun <T> PreferenceGroupScope.SinglePopup(
     key: Pref<T>,
     entries: Map<T, String>,
     title: String,
@@ -74,7 +74,7 @@ fun <T> PreferenceGroupScope.Popup(
 
 @JvmName("SinglePopup")
 @Composable
-inline fun <reified E : Enum<E>> PreferenceGroupScope.Popup(
+inline fun <reified E : Enum<E>> PreferenceGroupScope.SinglePopup(
     key: Pref<E>,
     entries: Array<E> = enumValues<E>(),
     label: (E) -> String = { it.name },
@@ -88,7 +88,7 @@ inline fun <reified E : Enum<E>> PreferenceGroupScope.Popup(
     noinline info: @Composable (() -> Unit)? = null,
     noinline trailing: @Composable (() -> Unit)? = null,
     elevation: Dp = 2.dp,
-) = Popup(
+) = SinglePopup(
     key = key,
     entries = entries.associateWith(label),
     title = title,
@@ -152,9 +152,8 @@ private inline fun <T, R> PreferenceGroupScope.MultiplePopupCore(
     )
 }
 
-@JvmName("MultiplePopup")
 @Composable
-fun <T> PreferenceGroupScope.Popup(
+fun <T> PreferenceGroupScope.MultiplePopup(
     key: Pref<Set<T>>,
     entries: Map<T, String>,
     title: String,
@@ -190,8 +189,9 @@ fun <T> PreferenceGroupScope.Popup(
     }
 }
 
+@JvmName("MultipleListPopup")
 @Composable
-fun <T> PreferenceGroupScope.Popup(
+fun <T> PreferenceGroupScope.MultiplePopup(
     key: Pref<List<T>>,
     entries: Map<T, String>,
     title: String,
@@ -220,7 +220,9 @@ fun <T> PreferenceGroupScope.Popup(
     elevation = elevation,
 ) { t, selected, label ->
     Row(
-        modifier = Modifier.clickable { selected %= t }.fillMaxWidth(),
+        modifier = Modifier
+            .clickable { selected %= t }
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         OrderBox(
@@ -232,7 +234,7 @@ fun <T> PreferenceGroupScope.Popup(
 }
 
 @Composable
-fun <T, R> PreferenceGroupScope.Popup(
+fun <T, R> PreferenceGroupScope.MultiplePopup(
     key: Pref<List<T>>,
     entries: Map<T, R>,
     present: @Composable RowScope.(R) -> Unit,
@@ -262,7 +264,9 @@ fun <T, R> PreferenceGroupScope.Popup(
     elevation = elevation,
 ) { t, selected, label ->
     Row(
-        modifier = Modifier.clickable { selected %= t }.fillMaxWidth(),
+        modifier = Modifier
+            .clickable { selected %= t }
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         OrderBox(

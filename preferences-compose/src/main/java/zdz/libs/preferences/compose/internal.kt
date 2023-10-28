@@ -39,8 +39,11 @@ import zdz.libs.compose.ex.status
 import zdz.libs.compose.ex.takeUnless
 
 internal val elevationModifier = Modifier.shadow(2.dp)
+
 @SuppressLint("ModifierFactoryExtensionFunction")
-internal fun elevationModifier(elevation: Dp) = if (elevation.value == 2f) elevationModifier else Modifier.shadow(elevation)
+internal fun elevationModifier(elevation: Dp) =
+    if (elevation.value == 2f) elevationModifier else Modifier.shadow(elevation)
+
 internal val sliderModifier = Modifier.composed {
     this
         .background(colorScheme.surface)
