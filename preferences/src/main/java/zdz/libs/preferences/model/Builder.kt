@@ -2,10 +2,11 @@ package zdz.libs.preferences.model
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import zdz.libs.preferences.MappedPref
-import zdz.libs.preferences.PrefImpl
+import zdz.libs.preferences.PrefGroup
 import zdz.libs.preferences.contracts.Pref
 import zdz.libs.preferences.contracts.Serializer
+import zdz.libs.preferences.dispresed.MappedPref
+import zdz.libs.preferences.dispresed.PrefImpl
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -16,7 +17,8 @@ data class Builder<T>(
     var cache: Boolean = false, // cache has no usage in this, only for it change to mapped
 ) : ReadOnlyProperty<Any?, Pref<T>> {
     override fun getValue(thisRef: Any?, property: KProperty<*>): Pref<T> =
-        PrefImpl(ds, default, key(property.name))
+        if (thisRef is PrefGroup) thisRef.PrefImpl(default, key(property.name))
+        else PrefImpl(ds, default, key(property.name))
 
     fun <R> map(serializer: Serializer<T, R>) =
         MappedBuilder(ds, default, key, serializer, cache)
@@ -44,7 +46,10 @@ data class MappedBuilder<S, T>(
 ) : ReadOnlyProperty<Any?, Pref<T>> {
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): Pref<T> =
-        MappedPref(ds, serializer.serialize(default), key(property.name), serializer, cache)
+        serializer.serialize(default).let {
+            if (thisRef is PrefGroup) thisRef.MappedPref(it, key(property.name), serializer, cache)
+            else MappedPref(ds, it, key(property.name), serializer, cache)
+        }
 
     companion object {
         fun <S, T> DataStore<Preferences>.build(

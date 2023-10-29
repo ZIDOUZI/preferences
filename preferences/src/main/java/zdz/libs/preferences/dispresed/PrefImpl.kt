@@ -1,4 +1,4 @@
-package zdz.libs.preferences
+package zdz.libs.preferences.dispresed
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

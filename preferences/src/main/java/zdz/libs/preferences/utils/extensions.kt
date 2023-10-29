@@ -2,11 +2,11 @@ package zdz.libs.preferences.utils
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import zdz.libs.preferences.CombinedPref
-import zdz.libs.preferences.PrefImpl
 import zdz.libs.preferences.annotations.ExperimentalPrefApi
 import zdz.libs.preferences.annotations.SubtlePrefApi
 import zdz.libs.preferences.contracts.Pref
+import zdz.libs.preferences.dispresed.CombinedPref
+import zdz.libs.preferences.dispresed.PrefImpl
 import kotlin.properties.ReadOnlyProperty
 
 @OptIn(SubtlePrefApi::class)
