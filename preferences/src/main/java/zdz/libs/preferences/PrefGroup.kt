@@ -1,12 +1,14 @@
 package zdz.libs.preferences
 
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import zdz.libs.preferences.annotations.ExperimentalPrefApi
 import zdz.libs.preferences.contracts.CachedPref
 import zdz.libs.preferences.contracts.Pref
 import zdz.libs.preferences.contracts.Serializer
@@ -14,7 +16,12 @@ import zdz.libs.preferences.utils.setOrDelete
 import java.io.IOException
 import kotlin.reflect.KFunction1
 
+@ExperimentalPrefApi
 open class PrefGroup(private val ds: DataStore<Preferences>) {
+
+    suspend fun edit(block: suspend (MutablePreferences) -> Unit) {
+        ds.edit(block)
+    }
 
     internal inner class PrefImpl<T>(
         override val default: T,

@@ -60,7 +60,7 @@ fun <T> PreferenceGroupScope.SinglePopup(
         })
     Base(
         title = title,
-        modifier = modifier.clickable { dialog.hide() },
+        modifier = modifier.clickable { dialog.show() },
         summary = summary,
         enabled = enabled,
         titlePresent = titlePresent,
