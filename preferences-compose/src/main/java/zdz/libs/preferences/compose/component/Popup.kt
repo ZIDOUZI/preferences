@@ -25,7 +25,6 @@ import zdz.libs.preferences.contracts.Pref
 import zdz.libs.preferences.model.get
 import zdz.libs.preferences.model.set
 
-@JvmName("SinglePopup")
 @Composable
 fun <T> PreferenceGroupScope.SinglePopup(
     key: Pref<T>,
@@ -48,7 +47,7 @@ fun <T> PreferenceGroupScope.SinglePopup(
             LazyColumn {
                 items(entries.size) { index ->
                     val (t, u) = entries.entries.elementAt(index)
-                    Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(selected = current == t, onClick = {
                             current = t
                             hide()
@@ -72,7 +71,6 @@ fun <T> PreferenceGroupScope.SinglePopup(
     )
 }
 
-@JvmName("SinglePopup")
 @Composable
 inline fun <reified E : Enum<E>> PreferenceGroupScope.SinglePopup(
     key: Pref<E>,
